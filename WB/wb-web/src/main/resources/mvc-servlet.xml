@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+    	   http://www.springframework.org/schema/mvc
+    	   http://www.springframework.org/schema/mvc/spring-mvc.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 配置文件
+    <context:property-placeholder ignore-unresolvable="true" location="classpath:mvc.properties"/>-->
+
+    <!-- 自定义转换器 -->
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <list>
+                <bean class="dev.gavin.wb.util.DateConverter"></bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 默认的注解映射的支持 -->
+    <mvc:annotation-driven conversion-service="conversionService">
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <!-- 这里顺序不能反，一定先写text/html,不然ie下返回 json 会出现下载提示 -->
+                        <value>text/html;charset=UTF-8</value>
+                        <value>application/json;charset=UTF-8</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <context:component-scan base-package="dev.gavin.wb.controller"/>
+
+    <!-- 静态资源映射 -->
+    <mvc:resources mapping="/app/**" location="/app/" />
+    <mvc:resources mapping="/libs/**" location="/libs/" />
+    <mvc:resources mapping="/css/**" location="/css/" />
+    <mvc:resources mapping="/js/**" location="/js/" />
+    <mvc:resources mapping="/img/**" location="/img/" />
+    <mvc:resources mapping="/pdfjs-dist/**" location="/pdfjs-dist/" />
+
+    <!-- 视图解析器 -->
+    <mvc:view-resolvers>
+        <mvc:jsp prefix="/WEB-INF/jsp/" suffix=".jsp"/>
+    </mvc:view-resolvers>
+
+    <!-- 定义文件上传解析器 -->
+    <!-- 注意这里 id="multipartResolver" 必须要加上并且不能自己另取名子，不然会报 400 错误，因为 spring 源码中调用就是寻找这个多字 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 这里配置的是每次上传的文件最大限制，不是指每个文件的最大限制, 单位: 字节（b） -->
+        <property name="maxUploadSize" value="1073741824"/> <!-- 这里限制为最大 1G 文件 -->
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+    <!-- 页面访问拦截器 -->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!-- 这里的 /** 会拦截所有的访问，包括上配置的静态资源 -->
+            <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/js/**" />
+            <mvc:exclude-mapping path="/css/**" />
+            <mvc:exclude-mapping path="/img/**" />
+            <mvc:exclude-mapping path="/libs/**" />
+            <mvc:exclude-mapping path="/app/**" />
+            <mvc:exclude-mapping path="/public/**" />
+            <bean class="dev.gavin.wb.intercept.CertificationIntercept"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!-- 启用 aop 注解支持 -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+</beans>

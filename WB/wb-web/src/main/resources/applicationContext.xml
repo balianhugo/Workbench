@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx.xsd
+           http://www.springframework.org/schema/task
+           http://www.springframework.org/schema/task/spring-task-4.1.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 启用注解 -->
+    <context:annotation-config/>
+
+    <!-- 使用注解注入properties中的值 -->
+    <bean id="config" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:wb.properties</value>
+            </list>
+        </property>
+        <!-- 设置编码格式 -->
+        <property name="fileEncoding" value="UTF-8"/>
+    </bean>
+
+    <!-- 描包自动注入 -->
+    <context:component-scan base-package="dev.gavin.wb"/>
+
+    <!-- 数据库环境配置-->
+    <import resource="classpath*:spring-dao.xml"/>
+
+    <!-- 数据库连接池配置-->
+    <import resource="classpath*:spring-data-pool.xml"/>
+
+    <!-- 开启扫描注解 @Transactional  -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- 定义全局事务 -->
+    <tx:advice transaction-manager="transactionManager" id="txAdvice">
+        <tx:attributes>
+            <tx:method name="insert*" propagation="REQUIRED" />
+            <tx:method name="delete*" propagation="REQUIRED" />
+            <tx:method name="update*" propagation="REQUIRED" />
+            <tx:method name="query*" read-only="true" propagation="REQUIRED"/>
+            <tx:method name="count*" read-only="true" propagation="REQUIRED"/>
+            <tx:method name="check*" propagation="NOT_SUPPORTED"/>
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <aop:pointcut id="serviceMethod" expression="execution(* dev.gavin.wb.service.impl.*.*(..))" />
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethod" />
+    </aop:config>
+
+    <!-- 自定义全局异常处理器 -->
+    <bean class="dev.gavin.wb.exception.WbExceptionHandler"/>
+
+
+    <!--  配置处理定时任务的线程池 -->
+    <task:scheduler id="scheduler" pool-size="5"  />
+    <!-- 配置处理 异步定时任务的  线程池 -->
+    <!--
+    　　pool-size:线程池大小   keep-alive:线程最大空闲时间
+    　　queue-capacity:队列大小（无线程可用时，其余任务放置队列中，队列放满后其他任务只能等待）
+    　　rejection-policy:队列任务数达到最大时，处理其他任务的策略
+    -->
+    <task:executor id="taskExecutor" pool-size="5" keep-alive="20" rejection-policy="DISCARD_OLDEST" queue-capacity="10" />
+
+    <!-- 启用任务扫描注解 -->
+    <task:annotation-driven executor="taskExecutor"  scheduler="scheduler" />
+
+</beans>

@@ -1,0 +1,71 @@
+.nav-wrap {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    width: 90px;
+    padding: 8px 0;
+    cursor: pointer;
+}
+
+.nav-wrap:hover {
+    background-color: #73AFDA;
+    color: #f0f0f0;
+}
+
+.nav-wrap span {
+    display: block;
+}
+
+.nav-wrap img {;
+    height: 52px;
+    width: 52px;
+}
+
+.nav-left-wrap {
+    font-size: 24px;
+    font-weight: bolder;
+    line-height: 88px;
+    padding: 0 30px;
+}
+
+.nav-right-wrap {
+    line-height: 88px;
+    float: right;
+    text-align: center;
+    text-decoration: none;
+    min-width: 90px;
+    max-width: 160px;
+    cursor: pointer;
+    overflow: hidden; /*自动隐藏文字*/
+    text-overflow: ellipsis;/*文字隐藏后添加省略号*/
+    white-space: nowrap;/*强制不换行*/
+}
+
+.nav-right-wrap:hover {
+    color: #e1e1e1;
+}
+
+.nav-right-wrap img {;
+    height: 16px;
+    width: 16px;
+    margin: 0 5px -2px 0;
+}
+
+.icon-wrap {
+    display: inline-block;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.icon-wrap:hover {
+    background-color: #73AFDA;
+}
+
+.nav-header {
+    border-bottom: #3e6aaa 1px solid;
+    color: #f9f9f9;
+}
+
+.grid-action-column {
+    margin: 0 5px;
+}

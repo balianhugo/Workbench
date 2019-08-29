@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://mybatis.org/schema/mybatis-spring
+       http://mybatis.org/schema/mybatis-spring.xsd">
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 扫描使用mybatis3配置 -->
+        <property name="configLocation" value="classpath:mybatis3-config.xml"/>
+        <!-- 自动扫描目录下的所有SQL映射的xml文件, 省掉Configuration.xml里的手工配置 -->
+        <property name="mapperLocations" value="classpath*:mapper/**/*.xml"/>
+    </bean>
+
+    <mybatis:scan base-package="dev.gavin.wb.dao"/>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <!--<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">-->
+        <!--<property name="dataSource" ref="dataSource2"></property>-->
+    <!--</bean>-->
+
+</beans>

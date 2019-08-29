@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="OFF">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+        <RollingFile name="RollingInfoFile" fileName="/wb/logs/info.log"
+                     filePattern="/wb/logs/$${date:yyyy-MM}/info-%d{MM-dd-yyyy}-%i.log.gz">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <SizeBasedTriggeringPolicy size="50MB"/>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="RollingErrorFile" fileName="/wb/logs/error.log"
+                     filePattern="/wb/logs/$${date:yyyy-MM}/error-%d{MM-dd-yyyy}-%i.log.gz">
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <SizeBasedTriggeringPolicy size="50MB"/>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="dev.gavin" level="DEBUG" additivity="true"/>
+        <logger name="org.springframework" level="INFO" additivity="true"/>
+        <logger name="org.mybatis" level="INFO" additivity="true"/>
+        <logger name="com.alibaba.druid" level="INFO" additivity="true"/>
+        <root level="INFO">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingInfoFile"/>
+            <appender-ref ref="RollingErrorFile"/>
+        </root>
+    </Loggers>
+</Configuration>
