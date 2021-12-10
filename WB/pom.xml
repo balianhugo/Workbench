@@ -31,7 +31,7 @@
         <version.servlet>3.1.0</version.servlet>
         <version.jstl>1.2</version.jstl>
         <version.jsp-api>2.2</version.jsp-api>
-        <version.log4j>2.7</version.log4j>
+        <version.log4j>2.15.0</version.log4j>
         <version.slf4j>1.7.21</version.slf4j>
         <version.commons-lang3>3.4</version.commons-lang3>
         <version.commons-codec>1.11</version.commons-codec>
